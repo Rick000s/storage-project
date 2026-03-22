@@ -2,9 +2,7 @@
 package cz.upce.fei;
 
 // import for sql database
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 // import for file
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -14,13 +12,13 @@ import java.nio.file.Paths;
 //import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("----MENU----");
-        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n");
+        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n" + "Write 6)Syns DataBase to Document");
         char choice = sc.next().charAt(0);
         switch (choice) {
             case '1':
@@ -37,6 +35,9 @@ public class Main {
                  break;
             case '5':
                 synsFileToDatabase();
+                break;
+            case '6':
+                syncDatabaseToFile();
                 break;
         }
 
@@ -176,6 +177,30 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println("Помилка при синхронізації: " + e.getMessage());
+        }
+    }
+
+    public static void syncDatabaseToFile() {
+        System.out.println("----------SYNCING DATABASE TO FILE-----------");
+        String fileName = "my_notes.txt";
+        String url = "jdbc:sqlite:my_database.db";
+        String sql = "SELECT todo FROM tasks";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) { // створення обєкта котрий стоїть перед і чекає запиту
+
+            List<String> tasksFromDb = new ArrayList<>();
+
+            while (rs.next()) {
+                tasksFromDb.add(rs.getString("todo")); //перебор спочатку воно на 0 потім на 1
+            }
+
+            Files.write(Paths.get(fileName), tasksFromDb);
+
+            System.out.println("Синхронізація завершена! У файл записано " + tasksFromDb.size() + " рядків.");
+        } catch (Exception e) {
+            System.out.println("Помилка при експорті з бази: " + e.getMessage());
         }
     }
 }
