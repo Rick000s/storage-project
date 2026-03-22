@@ -49,10 +49,10 @@ public class Main {
                 System.out.println("Підключено до бази!\n");
 
                 java.sql.Statement statement = conn.createStatement(); // створення курьєра
-                statement.execute("CREATE TABLE IF NOT EXISTS tasks(todo TEXT)"); // sql запит на створення таблиці з колонками
+                statement.execute("CREATE TABLE IF NOT EXISTS tasks(todo TEXT UNIQUE)"); // sql запит на створення таблиці з колонками
                 System.out.println("Таблиця створена!\n");
 
-                statement.execute("DELETE FROM tasks"); // очистка перед додаванням нових
+//                statement.execute("DELETE FROM tasks"); // очистка перед додаванням нових
 
                 statement.execute("INSERT INTO tasks (todo) VALUES ('First')");
                 statement.execute("INSERT INTO tasks (todo) VALUES ('Second')");
