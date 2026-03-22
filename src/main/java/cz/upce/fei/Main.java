@@ -10,18 +10,31 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.APPEND;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+//import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-
-//        simpleDataBase();
-//        readFromSimpleDataBase();
-//        writeToTextFile();
-//        readFromTextFile();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("----MENU----");
+        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n");
+        char choice = sc.next().charAt(0);
+        switch (choice) {
+            case '1':
+                simpleDataBase();
+                break;
+            case '2':
+                readFromSimpleDataBase();
+                break;
+            case '3':
+                 writeToTextFile();
+                 break;
+            case '4':
+                 readFromTextFile();
+                 break;
+        }
 
     }
 
