@@ -5,6 +5,7 @@ package cz.upce.fei;
 import java.sql.*;
 
 // import for file
+import java.io.IOException;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.APPEND;
 import java.nio.file.Files;
@@ -18,9 +19,13 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("----MENU----");
-        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n" + "Write 6)Syns DataBase to Document");
+        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n" + "Write 6)Syns DataBase to Document \n" + "Write 7)Clear Document \n" + "Write 8)Clear DataBase \n" + "Write 0)Exit");
         char choice = sc.next().charAt(0);
         switch (choice) {
+            case '0':
+                System.out.println("Вихід...");
+                System.exit(0);
+                break;
             case '1':
                 simpleDataBase();
                 break;
@@ -39,8 +44,13 @@ public class Main {
             case '6':
                 syncDatabaseToFile();
                 break;
+            case '7':
+                clearFile();
+                break;
+            case '8':
+                clearDatabase();
+                break;
         }
-
     }
 
     public static void simpleDataBase() {
@@ -201,6 +211,32 @@ public class Main {
             System.out.println("Синхронізація завершена! У файл записано " + tasksFromDb.size() + " рядків.");
         } catch (Exception e) {
             System.out.println("Помилка при експорті з бази: " + e.getMessage());
+        }
+    }
+
+    public static void clearFile() {
+        String fileName = "my_notes.txt";
+        try {
+            // Ми просто записуємо порожній список рядків
+            Files.write(Paths.get(fileName), new ArrayList<String>());
+            System.out.println("--- Файл успішно очищено! ---");
+        } catch (IOException e) {
+            System.out.println("Помилка при очищенні файлу: " + e.getMessage());
+        }
+    }
+
+    public static void clearDatabase() {
+        String url = "jdbc:sqlite:my_database.db";
+        String sql = "DELETE FROM tasks"; // Видаляє всі записи з таблиці tasks
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+
+            int rowsDeleted = stmt.executeUpdate(sql);
+            System.out.println("--- Базу очищено! Видалено рядків: " + rowsDeleted + " ---");
+
+        } catch (SQLException e) {
+            System.out.println("Помилка при очищенні бази: " + e.getMessage());
         }
     }
 }
