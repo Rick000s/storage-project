@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("----MENU----");
-        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n");
+        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n");
         char choice = sc.next().charAt(0);
         switch (choice) {
             case '1':
@@ -35,6 +35,9 @@ public class Main {
             case '4':
                  readFromTextFile();
                  break;
+            case '5':
+                synsFileToDatabase();
+                break;
         }
 
     }
@@ -143,6 +146,36 @@ public class Main {
             System.out.println("Готово! Зчитано з файлу.");
         } catch (Exception e) {
             System.out.println("Помилка файлу: " + e.getMessage());
+        }
+    }
+
+    public static void synsFileToDatabase() {
+        System.out.println("----------SYNS FILE TO DATABASE-----------");
+        String fileName = "my_notes.txt";
+        String url = "jdbc:sqlite:my_database.db";
+
+        try {
+            if (!Files.exists(Paths.get(fileName))) {
+                System.out.println("Файл не знайдено, нічого синхронізувати.");
+                return;
+            }
+            List<String> lines = Files.readAllLines(Paths.get(fileName));
+
+            try (Connection conn = DriverManager.getConnection(url)) {
+                String sql = "INSERT OR IGNORE INTO tasks (todo) VALUES (?)";  // шаблон для забиття знаком для заміни
+                var pstmt = conn.prepareStatement(sql);
+
+                for (String line : lines) {
+                    if (!line.trim().isEmpty()) { // не додавати порожні рядки
+                        pstmt.setString(1, line);  // міняє перший у лінії на тепершній обєкт
+                        pstmt.addBatch(); // збираємо в пачку для швидкості
+                    }
+                }
+                pstmt.executeBatch(); // "Пуш в датабазу запакованого"
+                System.out.println("Синхронізація успішна!");
+            }
+        } catch (Exception e) {
+            System.out.println("Помилка при синхронізації: " + e.getMessage());
         }
     }
 }
