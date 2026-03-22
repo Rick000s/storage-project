@@ -1,3 +1,4 @@
+// for JAVA 15+
 package cz.upce.fei;
 
 // import for sql database
@@ -49,7 +50,11 @@ public class Main {
                 System.out.println("Підключено до бази!\n");
 
                 java.sql.Statement statement = conn.createStatement(); // створення курьєра
-                statement.execute("CREATE TABLE IF NOT EXISTS tasks(todo TEXT UNIQUE)"); // sql запит на створення таблиці з колонками
+
+                // sql запит на створення таблиці з колонками
+                statement.execute(""" 
+                    CREATE TABLE IF NOT EXISTS tasks(todo TEXT UNIQUE)
+                    """);
                 System.out.println("Таблиця створена!\n");
 
 //                statement.execute("DELETE FROM tasks"); // очистка перед додаванням нових
