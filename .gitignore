@@ -41,3 +41,4 @@ build/
 # --- My Custom Data Files ---
 my_database.db
 my_notes.txt
+tasks.json

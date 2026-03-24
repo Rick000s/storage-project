@@ -1,9 +1,8 @@
 package cz.upce.fei;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -19,10 +18,13 @@ public class DatabaseManager {
 
                 java.sql.Statement statement = conn.createStatement(); // створення курьєра
 
-                // sql запит на створення таблиці з колонками
+                // sql запит на створення таблиці з колонками та автоматичним ІД
                 statement.execute(""" 
-                        CREATE TABLE IF NOT EXISTS tasks(todo TEXT UNIQUE)
-                        """);
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        todo TEXT NOT NULL
+    )
+    """);
                 System.out.println("Таблиця створена!\n");
 
 //                statement.execute("DELETE FROM tasks"); // очистка перед додаванням нових
@@ -75,5 +77,25 @@ public class DatabaseManager {
         } catch (SQLException e) {
             System.out.println("Помилка при очищенні бази: " + e.getMessage());
         }
+    }
+
+    public static List<Task> getAllTasks() {
+        List<Task> taskList = new ArrayList<>();
+        String sql = "SELECT * FROM tasks"; // таблиця
+        String url = "jdbc:sqlite:my_database.db";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                // Ось вона! Твоя "цеглина" Task у дії:
+                Task task = new Task(rs.getInt("id"), rs.getString("todo"));
+                taskList.add(task);
+            }
+        } catch (SQLException e) {
+            System.out.println("Помилка БД: " + e.getMessage());
+        }
+        return taskList; // Повертаємо цілий "кошик" із задачами
     }
 }

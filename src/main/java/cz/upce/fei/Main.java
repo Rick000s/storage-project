@@ -1,13 +1,14 @@
 // for JAVA 17+
 package cz.upce.fei;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("----MENU----");
-        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n" + "Write 6)Syns DataBase to Document \n" + "Write 7)Clear Document \n" + "Write 8)Clear DataBase \n" + "Write 0)Exit");
+        System.out.println("Write 1)Insert to Database \n" + "Write 2)Read from Database \n" + "Write 3)Insert to Document \n" + "Write 4)Read from Document \n" + "Write 5)Syns Document to DataBase \n" + "Write 6)Syns DataBase to Document \n" + "Write 7)Clear Document \n" + "Write 8)Clear DataBase \n" + "Write j)JSON \n" + "Write 0)Exit");
         char choice = sc.next().charAt(0);
         switch (choice) {
             case '0':
@@ -37,6 +38,10 @@ public class Main {
                 break;
             case '8':
                 DatabaseManager.clearDatabase();
+                break;
+            case 'j':
+                List<Task> currentTasks = DatabaseManager.getAllTasks(); // Дістали з бази
+                JsonManager.saveTasksToJson(currentTasks);               // Зберегли в JSON
                 break;
         }
     }
