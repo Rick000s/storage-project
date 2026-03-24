@@ -2,66 +2,50 @@ package cz.upce.fei;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.*;
 import java.util.List;
+import java.util.ArrayList;
 
 public class SyncManager {
+    private static final String DB_URL = "jdbc:sqlite:my_database.db";
+    private static final String FILE_NAME = "my_notes.txt";
 
     public static void syncFileToDatabase() {
-        System.out.println("----------SYNS FILE TO DATABASE-----------");
-        String fileName = "my_notes.txt";
-        String url = "jdbc:sqlite:my_database.db";
-
         try {
-            if (!Files.exists(Paths.get(fileName))) {
-                System.out.println("Файл не знайдено, нічого синхронізувати.");
-                return;
-            }
-            List<String> lines = Files.readAllLines(Paths.get(fileName));
+            if (!Files.exists(Paths.get(FILE_NAME))) return;
+            List<String> lines = Files.readAllLines(Paths.get(FILE_NAME));
 
-            try (Connection conn = DriverManager.getConnection(url)) {
-                String sql = "INSERT OR IGNORE INTO tasks (todo) VALUES (?)";  // шаблон для забиття знаком для заміни
-                var pstmt = conn.prepareStatement(sql);
-
-                for (String line : lines) {
-                    if (!line.trim().isEmpty()) { // не додавати порожні рядки
-                        pstmt.setString(1, line);  // міняє перший у лінії на тепершній обєкт
-                        pstmt.addBatch(); // збираємо в пачку для швидкості
+            try (Connection conn = DriverManager.getConnection(DB_URL)) {
+                String sql = "INSERT OR IGNORE INTO tasks (todo) VALUES (?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    for (String line : lines) {
+                        if (!line.isBlank()) {
+                            pstmt.setString(1, line.trim());
+                            pstmt.addBatch();
+                        }
                     }
+                    pstmt.executeBatch();
                 }
-                pstmt.executeBatch(); // "Пуш в датабазу запакованого"
-                System.out.println("Синхронізація успішна!");
             }
+            System.out.println("sync file to db success");
         } catch (Exception e) {
-            System.out.println("Помилка при синхронізації: " + e.getMessage());
+            System.out.println("sync error " + e.getMessage());
         }
     }
 
     public static void syncDatabaseToFile() {
-        System.out.println("----------SYNCING DATABASE TO FILE-----------");
-        String fileName = "my_notes.txt";
-        String url = "jdbc:sqlite:my_database.db";
-        String sql = "SELECT todo FROM tasks";
-
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) { // створення обєкта котрий стоїть перед і чекає запиту
+             ResultSet rs = stmt.executeQuery("SELECT todo FROM tasks")) {
 
-            List<String> tasksFromDb = new ArrayList<>();
-
+            List<String> data = new ArrayList<>();
             while (rs.next()) {
-                tasksFromDb.add(rs.getString("todo")); //перебор спочатку воно на 0 потім на 1
+                data.add(rs.getString("todo"));
             }
-
-            Files.write(Paths.get(fileName), tasksFromDb);
-
-            System.out.println("Синхронізація завершена! У файл записано " + tasksFromDb.size() + " рядків.");
+            Files.write(Paths.get(FILE_NAME), data);
+            System.out.println("sync db to file success lines " + data.size());
         } catch (Exception e) {
-            System.out.println("Помилка при експорті з бази: " + e.getMessage());
+            System.out.println("sync error " + e.getMessage());
         }
     }
 }
