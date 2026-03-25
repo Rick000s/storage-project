@@ -1,12 +1,9 @@
 # Storage Project 📦
 
-This project is a hands-on practice focused on mastering various data persistence methods in Java. I am exploring file handling, database management, and building a clean application architecture.
+[![Java Version](https://img.shields.io/badge/Java-17%2B-blue)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🛠 Technologies
-* **Java 17+**
-* **Maven** (Dependency management)
-* **SQLite / JDBC** (Relational database operations)
-* **Java NIO** (File system operations)
+This project is a hands-on practice focused on mastering various data persistence methods in Java. It explores file handling, database management, and building a clean, scalable application architecture.
 
 ---
 
@@ -14,21 +11,35 @@ This project is a hands-on practice focused on mastering various data persistenc
 
 The application provides a console-based menu to manage data across different storages:
 
-1. **SQL Database**:
-    * Save notes into the `tasks` table.
-    * Fetch and display all records from the database.
-    * Clear the entire table with a single command.
-2. **File System (TXT)**:
-    * Write strings to `my_notes.txt`.
-    * Read and display file content.
-    * Clear the file without deleting it.
-3. **Two-way Synchronization**:
-    * **File ➡️ DB**: Transfer all unique lines from the file to the database (using `Batch Processing` for high performance).
-    * **DB ➡️ File**: Refresh the text file with the latest data from the SQL database.
+### 1. SQL Database Management
+* **Insert/Read**: Save notes into the `tasks` table and fetch them via JDBC.
+* **Maintenance**: Clear the entire table with a single command.
+* **Performance**: Optimized SQL queries for data handling.
+
+### 2. File System Operations (TXT/NIO)
+* **I/O Operations**: Write strings to `my_notes.txt` and read them using Java NIO.
+* **Cleanup**: Clear file content without deleting the file itself.
+
+### 3. Smart Synchronization
+* **File ➡️ DB**: Transfer unique lines from the file to the database using `Batch Processing`.
+* **DB ➡️ File**: Refresh the text file with the latest data from the SQL database.
 
 ---
 
-## 📋 How to Run
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/Rick000s/storage-project.git](https://github.com/Rick000s/storage-project.git)
+## 🛠 Technologies & Tools
+* **Language**: Java 17+
+* **Build Tool**: Maven
+* **Database**: SQLite (JDBC)
+* **JSON Support**: Google GSON
+* **Exec**: Launch4j (for Windows .exe wrapper)
+
+---
+
+## 📥 Download & Quick Start
+
+You don't need to build the project yourself. You can download ready-to-use versions from the [**Releases**](https://github.com/Rick000s/storage-project/releases) section.
+
+* **For Windows:** Download `Storage.exe` and run it.
+* **For macOS / Linux:** Download the `.jar` file and run it via terminal:
+  ```bash
+  java -jar DatabaseLearning-1.0-SNAPSHOT.jar
